@@ -1,7 +1,7 @@
 /* Javascript for ShareXBlock. */
 function ShareXBlock(runtime, element) {
-    STUDIO_BASE_URL = 'http://localhost:18010';
-    LMS_BASE_URL = 'http://localhost:18000';
+    STUDIO_BASE_URL = 'http://studio.youngsphere.com';
+    LMS_BASE_URL = 'http://youngsphere.com';
     list_author_URL = '/api/courses/v1/courses/';
     $.ajax({
             type: "GET",
