@@ -2,16 +2,18 @@
 
 import pkg_resources
 from xblock.core import XBlock
-from xblock.fields import Integer,String, Scope
+from xblock.fields import Integer, String, Scope, UNIQUE_ID
 from xblock.fragment import Fragment
 from xblockutils.studio_editable import StudioEditableXBlockMixin
+
 
 def _(text):
     """
     :return text
     """
     return text
-    
+
+@XBlock.wants('user')
 class ShareXBlock(StudioEditableXBlockMixin, XBlock):
     """
     TO-DO: document what your XBlock does.
@@ -20,25 +22,18 @@ class ShareXBlock(StudioEditableXBlockMixin, XBlock):
     # Fields are defined on the class.  You can access them in your code as
     # self.<fieldname>.
 
-    # TO-DO: delete count, and define your own fields.
-    count = Integer(
-        default=0, scope=Scope.user_state,
-        help="A simple counter, to show something happening",
-    )
-    duplicate_source_locator = String(
-        display_name=_("Id of the shareable Object"),
-        help=_("This is used to locate the sharable object to duplicate"),
-        scope=Scope.settings,
-        default=""
-    )
+
     parent_locator = String(
         display_name=_("Parent Locator"),
         help=_("The above object will be attached to this parent object"),
         scope=Scope.settings,
         default=""
     )
+    duplicate_source_locator = None
 
     editable_fields = ('duplicate_source_locator', 'parent_locator')
+
+
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -46,17 +41,29 @@ class ShareXBlock(StudioEditableXBlockMixin, XBlock):
         return data.decode("utf8")
 
     # TO-DO: change this view to display your data your own way.
+
     def student_view(self, context=None):
         """
         The primary view of the ShareXBlock, shown to students
         when viewing courses.
         """
+        best_friend = None
+        for block in self.get_parent().children:
+            if str(self.scope_ids.usage_id) == str('block-v1:' + block._to_string()):
+                break
+            else:
+                best_friend = 'block-v1:' + block._to_string()
+        self.duplicate_source_locator = best_friend
+        duplicate_source_locator = self.duplicate_source_locator
+
         html = self.resource_string("static/html/shareblock.html")
         frag = Fragment(html.format(self=self))
         frag.add_css(self.resource_string("static/css/shareblock.css"))
         frag.add_javascript(self.resource_string("static/js/src/shareblock.js"))
         frag.initialize_js('ShareXBlock')
         return frag
+
+
 
 
      # Context argument is specified for xblocks, but we are not using herein
@@ -94,18 +101,6 @@ class ShareXBlock(StudioEditableXBlockMixin, XBlock):
     #         'result': 'success',
     #     }
 
-    # TO-DO: change this handler to perform your own actions.  You may need more
-    # than one handler, or you may not need any handlers at all.
-    @XBlock.json_handler
-    def increment_count(self, data, suffix=''):
-        """
-        An example handler, which increments the data.
-        """
-        # Just to show data coming in...
-        assert data['hello'] == 'world'
-
-        self.count += 1
-        return {"count": self.count}
 
     # TO-DO: change this to create the scenarios you'd like to see in the
     # workbench while developing your XBlock.

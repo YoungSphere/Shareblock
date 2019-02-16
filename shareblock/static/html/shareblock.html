@@ -1,33 +1,41 @@
+<h2>Share the component with your students</h2>
 <div class="shareblock_block">
-<p class="courses_available">ShareXBlock: count is now
-    <span class='count'>{self.count}</span> (click me to increment).
-    {self.parent_locator}
-</p>
-<button class="coursesbutton">list user courses</button>
-<div id="list_courses">
-	
-</div>
-<div id="list_chapters">
-	
-</div>
-<div id="list_sequentials">
-	
-</div>
-<div id="list_verticals">
-	
-</div>
+<div>
+    Select the course to share:
+    <select class="list_courses">
 
-<label class="label" for="edit_parent_locator">Parent Locator</label>
-<input class="input setting-input edit-parent-locator" id="edit_parent_locator" value="{self.parent_locator}" type="text" disabled data-default-value="{self.parent_locator}">
+</select>
+    <button class="chapterbutton">List Chapters</button>
+    </div>
+    <br>
+    <div class="div_chapters" style="display: none">
+        Select Chapter
+    <select class="list_chapters">
 
-<label class="label" for="edit_duplicate_source_locator">Source Locator</label>
-<input class="input setting-input edit-duplicate-source-locator" id="edit_duplicate_source_locator" value="{self.duplicate_source_locator}" type="text" disabled data-default-value="{self.duplicate_source_locator}">
+</select>
+    <button class="sectionbutton"> List Sections</button>
+        </div>
+    <br>
+    <div class="div_sequentials" style="display: none;">
+        Select Section
+    <select class="list_sequentials">
 
-<label class="label" for="edit_user_name">User Name</label>
-<input class="input setting-input edit-user-name" id="edit_user_name" type="text">
+</select>
+    <button class="unitbutton"> List Units</button>
+        </div>
+    <br>
+    <div class="div_verticals" style="display: none">
+        Select Unit
+    <select class="list_verticals">
 
-<label class="label" for="edit_password">Password</label>
-<input class="input setting-input edit-password" id="edit_password" type="password">
+</select>
+    <br>
+        <div>
+<input class="input setting-input edit-duplicate-source-locator" hidden id="edit_duplicate_source_locator" value="{self.duplicate_source_locator}" type="text" disabled data-default-value="{self.duplicate_source_locator}">
 
 <button class="sharebutton">Share</button>
+    </div>
+
+        </div>
+
 </div>

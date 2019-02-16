@@ -1,134 +1,104 @@
 /* Javascript for ShareXBlock. */
 function ShareXBlock(runtime, element) {
-    STUDIO_BASE_URL = 'http://localhost:18010'
-    LMS_BASE_URL = 'http://localhost:18000'
-    list_author_URL = '/api/courses/v1/courses/'
-
+    STUDIO_BASE_URL = 'http://localhost:18010';
+    LMS_BASE_URL = 'http://localhost:18000';
+    list_author_URL = '/api/courses/v1/courses/';
+    $.ajax({
+            type: "GET",
+            url: LMS_BASE_URL + list_author_URL,
+            success: updateCourses,
+        xhrFields: {
+              withCredentials: true
+            },
+        });
     function updateCount(result) {
         $('.count', element).text(result.count);
     }
     function updateCourses(result) {
-        count = 0
-        for(let course of result.results){
-        var para = document.createElement("P");                       // Create a <p> element
-        var t = document.createTextNode(course.name);       // Create a text node
+        $('.list_courses').empty()
+        for (let course of result.results) {
+            var key = course.blocks_url;
+            var value = course.name;
+            $('.list_courses')
+                .append($('<option>', {value: key})
+                    .text(value));
 
-        para.appendChild(t);                                          // Append the text to <p>
-        para.classList.add(course.blocks_url)
-        para.classList.add(count)
-        document.getElementById('list_courses').appendChild(para);
-        $('.'+count).click(function(eventObject) {
-        console.log(this.classList[0])
-        $.ajax({
-            type: "GET",
-            url: this.classList[0]+'&depth=1',
-            success: updateChapters
-        });
 
-    });
-        count++;
+        }
+
     }
+
         
 
-    }
+
     function listAuthorCourses() {
         $.ajax({
             type: "GET",
             url: list_author_URL,
-            success: updateCourses
+            success: updateCourses,
+            xhrFields: {
+              withCredentials: true
+            },
         })
     }
     function updateChapters(result) {
-    count = 0
+        $('.list_chapters').empty()
+    count = 0;
     for(let block in result.blocks){
 
         if(result.blocks[block].type == "chapter"){
-       
+
+            var key = result.blocks[block].id;
+            var value = result.blocks[block].display_name;
+            $('.list_chapters')
+                .append($('<option>', {value: key})
+                    .text(value));
+
+
+        }
         
-        var para = document.createElement("P");                       // Create a <p> element
-        var t = document.createTextNode(result.blocks[block].display_name);       // Create a text node
 
-        para.appendChild(t);                                          // Append the text to <p>
-        para.classList.add(result.blocks[block].id)
-        para.classList.add(count+'chapters')
-        document.getElementById('list_chapters').appendChild(para);
-        $('.'+count+'chapters').click(function(eventObject) {
-        console.log(this.classList[0])
-        $.ajax({
-            type: "GET",
-            url: '/api/courses/v1/blocks/'+this.classList[0]+'/?depth=1',
-            success: updateSequentials
-        });
-
-    });
-        count++;
-    }
         
 
         
     }
+    $('.div_chapters').show()
 }
 
     function updateSequentials(result) {
-
+    $('.list_sequentials').empty()
       count = 0
     for(let block in result.blocks){
 
-        if(result.blocks[block].type == "sequential"){
-       
-        
-        var para = document.createElement("P");                       // Create a <p> element
-        var t = document.createTextNode(result.blocks[block].display_name);       // Create a text node
-
-        para.appendChild(t);                                          // Append the text to <p>
-        para.classList.add(result.blocks[block].id)
-        para.classList.add(count+'sequential')
-        document.getElementById('list_sequentials').appendChild(para);
-        $('.'+count+'sequential').click(function(eventObject) {
-        console.log(this.classList[0])
-        $.ajax({
-            type: "GET",
-            url: '/api/courses/v1/blocks/'+this.classList[0]+'/?depth=1',
-            success: updateVerticals
-        });
-
-    });
-        count++;
-    }
-        
+        var key = result.blocks[block].id;
+            var value = result.blocks[block].display_name;
+            $('.list_sequentials')
+                .append($('<option>', {value: key})
+                    .text(value));
 
         
     }
+    $('.div_sequentials').show()
 
     }
 
     function updateVerticals(result) {
-
-            count = 0
-    for(let block in result.blocks){
-
-        if(result.blocks[block].type == "vertical"){
-       
-        
-        var para = document.createElement("P");                       // Create a <p> element
-        var t = document.createTextNode(result.blocks[block].display_name);       // Create a text node
-
-        para.appendChild(t);                                          // Append the text to <p>
-        para.classList.add(result.blocks[block].id)
-        para.classList.add(count+'verticals')
-        document.getElementById('list_verticals').appendChild(para);
-        $('.'+count+'verticals').click(function(eventObject) {
-        $('.edit-parent-locator').val(this.classList[0]); 
-
-    });
-        count++;
-    }
-        
-
-        
-    }
+        $('.list_verticals').empty()
+        count = 0;
+        for (let block in result.blocks) {
+            if (result.blocks[block].type == "vertical") {
+                var key = result.blocks[block].id;
+                var value = result.blocks[block].display_name;
+                $('.list_verticals')
+                    .append($('<option>', {value: key})
+                        .text(value));
 
 
+            }
+
+
+        }
+        $('.div_verticals').show()
     }
 
     var handlerUrl = runtime.handlerUrl(element, 'increment_count');
@@ -137,22 +107,61 @@ function ShareXBlock(runtime, element) {
     $('.coursesbutton', element).click(function(eventObject) {
         $.ajax({
             type: "GET",
-            url: list_author_URL,
-            success: updateCourses
+            url: LMS_BASE_URL + list_author_URL,
+            success: updateCourses,
+            xhrFields: {
+              withCredentials: true
+            },
         });
     });
+    $('.chapterbutton', element).click(function(eventObject) {
+        $.ajax({
+            type: "GET",
+            url: $( ".list_courses" ).val()+'&depth=1',
+            success: updateChapters,
+            xhrFields: {
+              withCredentials: true
+            },
+        });
+
+    });
+    $('.sectionbutton', element).click(function(eventObject) {
+        $.ajax({
+            type: "GET",
+            url: LMS_BASE_URL+'/api/courses/v1/blocks/'+$(".list_chapters" ).val()+'/?depth=1',
+            success: updateSequentials,
+            xhrFields: {
+              withCredentials: true
+            },
+        });
+
+    });
+
+    $('.unitbutton', element).click(function(eventObject) {
+        $.ajax({
+            type: "GET",
+            url: LMS_BASE_URL+'/api/courses/v1/blocks/'+$( ".list_sequentials" ).val()+'/?depth=1',
+            success: updateVerticals,
+            xhrFields: {
+              withCredentials: true
+            },
+        });
+
+    });
+
 
     $('.sharebutton').click(function(eventObject) {
         $('.edit-parent-locator').value
         $.ajax({
             type: "POST",
-            url: "http://localhost:18010/xblock/",
+            url: STUDIO_BASE_URL + "/xblock/",
             contentType: "application/json",
+            xhrFields: {
+              withCredentials: true
+            },
             data: JSON.stringify({
-                username: $('.edit-user-name').val(),
-                password: $('.edit-password').val(),
                 duplicate_source_locator: $('.edit-duplicate-source-locator').val(),
-                parent_locator: $('.edit-parent-locator').val(),
+                parent_locator: $( ".list_verticals" ).val(),
 }),
             success: updateCourses
         });
